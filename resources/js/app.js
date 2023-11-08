@@ -4,19 +4,22 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import './bootstrap';
-import { createApp } from 'vue';
+require('./bootstrap');
 
-/**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
- */
+window.Vue = require('vue').default;
 
-const app = createApp({});
+import Vue from 'vue';
+/* importando e configurando o vuex*/
+import Vuex from 'Vuex'
 
-import ExampleComponent from './components/ExampleComponent.vue';
-app.component('example-component', ExampleComponent);
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+    state: {
+        item: {},
+        transacao: { status: '', mensagem: '', dados: '' }
+    }
+})
 
 /**
  * The following block of code may be used to automatically register your
@@ -26,14 +29,46 @@ app.component('example-component', ExampleComponent);
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-// Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-//     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
-// });
+// const files = require.context('./', true, /\.vue$/i)
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('login-component', require('./components/Login.vue').default);
+Vue.component('home-component', require('./components/Home.vue').default);
+Vue.component('marcas-component', require('./components/Marcas.vue').default);
+Vue.component('input-container-component', require('./components/InputContainer.vue').default);
+Vue.component('table-component', require('./components/Table.vue').default);
+Vue.component('card-component', require('./components/Card.vue').default);
+Vue.component('modal-component', require('./components/Modal.vue').default);
+Vue.component('alert-component', require('./components/Alert.vue').default);
+Vue.component('paginate-component', require('./components/Paginate.vue').default);
 
 /**
- * Finally, we will attach the application instance to a HTML element with
- * an "id" attribute of "app". This element is included with the "auth"
- * scaffolding. Otherwise, you will need to add an element yourself.
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-app.mount('#app');
+Vue.filter('formataDataTempoGlobal', function(d) {
+    if(!d) return ''
+
+    d = d.split('T')
+
+    let data = d[0]
+    let tempo = d[1]
+
+    //formatando a data
+    data = data.split('-')
+    data = data[2] + '/' + data[1] + '/' + data[0]
+
+    //formatar o tempo
+    tempo = tempo.split('.')
+    tempo = tempo[0]
+
+    return data + ' ' + tempo
+})
+
+const app = new Vue({
+    el: '#app',
+    store
+});
